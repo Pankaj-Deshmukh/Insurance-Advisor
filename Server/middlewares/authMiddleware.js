@@ -3,11 +3,8 @@ const jwt = require("jsonwebtoken");
 
 const JWT_SECRET = "KALYAN";
 const authMiddleware = async(req, res, next) => {
-      console.log(req.headers);
       const authToken = req.headers.authorization;
-      console.log(authToken);
       if(!authToken || !authToken.startsWith("Bearer ")) {
-            console.log(authToken);
             return res.status(204).json({
                   message: "wrong auth token"
             });

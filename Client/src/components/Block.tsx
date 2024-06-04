@@ -17,7 +17,7 @@ const Block: FunctionComponent<BlockType> = ({ className = "", ButtonText, Headd
   const page = ButtonText === "Sign in" ? "Sign in" : "Sign up";
   return (
     <div
-      className={`w-[557px] rounded-xl bg-darkslategray overflow-hidden shrink-0 flex flex-col items-start justify-start pt-[86px] px-16 pb-[65px] box-border gap-[26px] mix-blend-normal max-w-full z-[1] text-left text-11xl text-white font-paytone-one mq675:pt-14 mq675:px-8 mq675:pb-[42px] mq675:box-border ${className}`}
+      className={`w-[557px] rounded-xl bg-black bg-opacity-25 border border-black	 overflow-hidden shrink-0 flex flex-col items-start justify-start pt-[86px] px-16 pb-[65px] box-border gap-[26px] mix-blend-normal max-w-full z-[1] text-left text-11xl text-white font-paytone-one mq675:pt-14 mq675:px-8 mq675:pb-[42px] mq675:box-border ${className}`}
     >
       <div className="flex flex-row items-start justify-start pt-0 px-0 pb-[21px]">
         <h1 className="m-0 relative text-inherit font-normal font-inherit mq450:text-lg mq800:text-5xl">

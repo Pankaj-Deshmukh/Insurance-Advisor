@@ -18,7 +18,6 @@ const signupSchema = zod.object({
 
 router.post("/signup", async(req, res) => {
       const {data, success} = await signupSchema.safeParse(req.body);
-      console.log(data);
       if (!success)
       {
             return res.json({
@@ -26,7 +25,6 @@ router.post("/signup", async(req, res) => {
             });
       }
       try {
-            console.log(process.env.HASH_SECRET);
             const user = await prisma.users.create({
                   data: {
                         email: data.email,
@@ -76,8 +74,6 @@ router.post("/signin", async(req, res) => {
             });
             if(existingUser)
             {
-                  console.log(existingUser.password);
-                  console.log(data.password);
                   const passwordValidation = await bcrypt.compare(data.password, existingUser.password);
                   if(passwordValidation)
                   {
