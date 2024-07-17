@@ -5,7 +5,6 @@ const authMiddleware = require("../middlewares/authMiddleware");
 const zod = require("zod");
 const bcrypt = require("bcrypt");
 const {User} = require('../db/index'); // Import the User model
-const mongoose = require('mongoose')
 const router = Router();
 
 
@@ -14,7 +13,6 @@ const signupSchema = zod.object({
   name: zod.string().min(3),
   password: zod.string()
 });
-
 router.post("/signup", async (req, res) => {
   const { success, data } = signupSchema.safeParse(req.body);
   if (!success) {
@@ -23,24 +21,32 @@ router.post("/signup", async (req, res) => {
   
   try {
     const hashedPassword = await bcrypt.hash(data.password, parseInt(process.env.HASH_SECRET));
+
+    // Define a default sessionData structure
+    const defaultSession = new Map([
+      ["firstSession", []], // Example session with an empty array of questions
+    ]);
+
     const newUser = await User.create({
       email: data.email,
       name: data.name,
-      password: hashedPassword
+      password: hashedPassword,
+      sessionData: defaultSession, // Assign default sessionData here
     });
-    console.log(newUser)
+
     const savedUser = await newUser.save();
     const token = jwt.sign({ id: savedUser._id }, process.env.JWT_SECRET);
-    console.log(savedUser)
+
     return res.status(200).json({
       token,
-      name: savedUser.name
+      name: savedUser.name,
     });
   } catch (err) {
-    console.log(err);
+    console.error(err);
     return res.status(500).json({ msg: "user already exists or server error" });
   }
 });
+
 
 const signinSchema = zod.object({
   email: zod.string().email(),
