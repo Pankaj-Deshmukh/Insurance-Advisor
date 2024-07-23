@@ -51,10 +51,11 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
     const userId = req.id;
 
     // Simulate getting a response from LLM
-    const answer = await axios.post("http://localhost:5000/get_policies", {
+    let answer = await axios.post("http://localhost:5000/get_policies", {
       question: query
     });
-
+    console.log(typeof(answer.data.response));
+    answer = answer.data.response;
     // Find the user and the session
     const user = await User.findById(userId);
     if (!user) {
@@ -87,7 +88,7 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
     // Return the updated session data
     res.status(200).json(Array.from(user.sessionData.get(current_session_id)));
   } catch (error) {
-    console.error(error);
+    // console.error(error);
     res.status(500).json({ message: 'Server error' });
   }
 });
