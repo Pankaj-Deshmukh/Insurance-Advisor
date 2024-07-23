@@ -8,6 +8,7 @@ import {
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Start from "./pages/Start";
+import Body from "./pages/Body";
 import Home from "./pages/Home";
 
 function App() {
@@ -51,7 +52,7 @@ function App() {
       <Route path="/" element={<Start />} />
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
-      <Route path="/home" element={<Home />}/>
+      <Route path="/home" element={<Body/>}/>
     </Routes>
   );
 }
