@@ -1,16 +1,16 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 
-const JWT_SECRET = "KALYAN";
 const authMiddleware = async(req, res, next) => {
       const authToken = req.headers.authorization;
       if(!authToken || !authToken.startsWith("Bearer ")) {
-            return res.status(204).json({
+            return res.status(400).json({
                   message: "wrong auth token"
             });
       }
       
       const Token = authToken.split(" ")[1];
+      
       try {
             const verifyedToken = await jwt.verify(Token,process.env.JWT_SECRET);
             req.id = verifyedToken.id;

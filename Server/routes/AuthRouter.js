@@ -80,6 +80,7 @@ router.post("/signin", async (req, res) => {
 });
 
 router.post("/isauthorized", authMiddleware, async (req, res) => {
+  console.log("reached");
   return res.status(200).json({ message: "good to go" });
 });
 

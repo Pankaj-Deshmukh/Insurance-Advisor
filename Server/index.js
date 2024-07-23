@@ -9,7 +9,7 @@ app.use(express.json());
 
 
 app.use("/api/auth",AuthRouter);
-app.use("api/query",QueryRouter);
+app.use("/api/query",QueryRouter);
 
 
 
