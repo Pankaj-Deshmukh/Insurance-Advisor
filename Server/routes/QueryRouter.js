@@ -4,6 +4,7 @@ const  z  = require("zod");
 const { User, Question } = require("../db/index"); // Adjust the path as needed
 const authMiddleware = require("../middlewares/authMiddleware");
 const { default: mongoose } = require('mongoose');
+const axios = require("axios");
 
 const router = Router();
 
@@ -50,7 +51,9 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
     const userId = req.id;
 
     // Simulate getting a response from LLM
-    const answer = ans;
+    const answer = await axios.post("http://localhost:5000/get_policies", {
+      question: query
+    });
 
     // Find the user and the session
     const user = await User.findById(userId);
