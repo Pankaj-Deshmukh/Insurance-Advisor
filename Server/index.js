@@ -15,4 +15,4 @@ app.use("/api/query",QueryRouter);
 
 app.listen(8081, () => {
       console.log("Backend Started");
-})
+});

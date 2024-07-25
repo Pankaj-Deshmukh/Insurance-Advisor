@@ -16,7 +16,7 @@ const SignUp: FunctionComponent = () => {
       });
       console.log(userSignUpDetails);
       async function userSignUp() {
-        const user = await axios.post("http://localhost:3000/api/auth/signup",userSignUpDetails);
+        const user = await axios.post("http://localhost:8081/api/auth/signup",userSignUpDetails);
         if(user.status == 200){
           localStorage.setItem("token", "Bearer "+user.data.token);
           localStorage.setItem("name", user.data.name);

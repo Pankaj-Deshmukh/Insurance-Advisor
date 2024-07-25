@@ -145,8 +145,6 @@ body {
   align-items: center;
 }
 .searchBar {
-  position: absolute;
-  bottom: 0;
   justify-self: center;
   align-self: center;
   width: 45rem;
@@ -225,13 +223,16 @@ body {
 }
 .previousHistory {
   display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   flex: 1;
 }
 .history {
   display: flex;
   gap: 15px;
   height: 1.5rem;
-  background-color: #ededff;
+  /* background-color: #ededff; */
   border-radius: 5px;
   justify-content: center;
   align-items: center;

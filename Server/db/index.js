@@ -38,12 +38,12 @@ userSchema.pre("save", function (next) {
 
 // Custom validation function for array length limit (sessionQuestions)
 function arrayLimitValidator(val) {
-  return val.length <= 5;
+  return val.length <= 10;
 }
 
 // Custom validation futnction for map size limit (sessionData)
 function mapLimitValidator(val) {
-  return val.size <= 5;
+  return val.size <= 10;
 }
 
 // Middleware to manage sessionData and sessionQuestions
@@ -53,14 +53,14 @@ userSchema.pre("save", function (next) {
   this.sessionData = this.sessionData instanceof Map ? this.sessionData : new Map();
 
   // Manage sessionData
-  if (this.sessionData.size >= 5) {
+  if (this.sessionData.size >= 10) {
     // Remove oldest session
     const oldestSessionKey = Array.from(this.sessionData.keys())[0];
     this.sessionData.delete(oldestSessionKey);
   }
 
   // Manage sessionQuestions
-  if (this.sessionQuestions.length >= 5) {
+  if (this.sessionQuestions.length >= 10) {
     // Remove oldest session question
     this.sessionQuestions.shift();
   }
