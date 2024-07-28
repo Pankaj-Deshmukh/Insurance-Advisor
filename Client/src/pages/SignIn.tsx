@@ -37,7 +37,7 @@ const SignIn: FunctionComponent = () => {
         HeadderL1="Sign Into"
         HeadderL2="Your Account"
         onButtonClick={userSignIn}
-      >
+      >``
         <InputBox
           type="text"
           placeholder="Email"
