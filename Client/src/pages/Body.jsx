@@ -8,7 +8,10 @@ import Sessions from "../components/Sessions";
 const Body = ({ className = "" }) => {
    const [query, setQuery] = useState('');
    const [chatHistory, setChatHistory] = useState([]);
-   const [sessionData,setSessionData] = useState([]);
+   const [sessionData, setSessionData] = useState([]);
+   const [dataFetched, setDataFetched] = useState(false);
+   // const [hasSearched, setHasSearched] = useState(false);
+   const [currectSessionId, setCurrentSessionId] = useState("firstSession");
    const userName = localStorage.getItem("name") ? localStorage.getItem("name") : "userName";
    const token = localStorage.getItem("token");
 
@@ -20,15 +23,20 @@ const Body = ({ className = "" }) => {
    const handleSearch = async () => {
       if (query.trim() === '') return; // Avoid empty queries
       try {
-         const response = await axios.get('http://localhost:8081/api/query/get_responce', {
-         params: { query }, // Pass the search query as a query parameter
-      });
+         const response = await axios.post("http://localhost:8081/api/query/llmquery",{
+            query: query,
+            current_session_id: currectSessionId
+         },{
+            headers: {
+               Authorization: token
+            }
+         });
       
       setChatHistory((prevHistory)=>[...prevHistory, { question: query, answer: response.data.answer }]);
       setQuery(''); // Clear the input field
 
       } catch (error) {
-      console.error('Error fetching search results:', error);
+      console.error('Error fetching search results:', error.message);
       }
    };
    // Function to handle Enter key press
@@ -47,8 +55,9 @@ const Body = ({ className = "" }) => {
                   Authorization: token
                }
             })
-            setSessionData(response.data)
-            console.log(response.data)
+            setSessionData(response.data);
+            // console.log(response.data);
+            setDataFetched(true);
          } catch(err){
             console.error('Error fetching session data:', err);
          }
@@ -56,15 +65,47 @@ const Body = ({ className = "" }) => {
       sessionDetails();
    },[]);
 
-   const formatQuestion = (question) => {
-      if (typeof question === 'object' && !Array.isArray(question)) {
-        // Ensure only character values are joined
-        const characterArray = Object.values(question).filter(value => typeof value === 'string');
-        return characterArray.join('');
-      }
-      return question;
-    };
-    
+   // Get the latest SessionId.
+   useEffect(()=>{
+      if (dataFetched && sessionData.length > 0) {
+         try{
+            setCurrentSessionId((prevSessionId)=>{
+               prevSessionId = sessionData[sessionData.length - 1].sessionId;
+               // console.log(prevSessionId)
+            });
+         } catch(err){
+            console.error(err);
+         }
+      } else return;
+   },[dataFetched,sessionData]);
+
+   // Transform session data(questions) from objects to string.
+   const transformData = (data) => {
+      return data.map(session => ({
+        sessionId: session.sessionId,
+        questions: session.questions.map(q => 
+          Object.values(q).filter(value => value !== q._id && value !== q.createTime).join('')
+        )
+      }));
+   };
+   
+   // Create new Session & get sessionId.
+   const newSession = async () => {
+      if(sessionData[sessionData.length - 1].questions.length > 0){  // Returns the function without exicution if the previous session is empty
+         try{
+            const response = await axios.post("http://localhost:8081/api/query/createNewSession",{},{
+               headers: {
+                  Authorization: token
+               }
+            })
+            setCurrentSessionId(response.data.newSessionId);
+            // console.log(response.data.newSessionId);
+            setChatHistory([]);
+         } catch (err){
+            console.error(`Error Message :\n    ${err}`);
+         }
+      } else return;
+   }
 
    return (
       <div className={[styles.body, className].join(" ")} id="body">
@@ -118,50 +159,10 @@ const Body = ({ className = "" }) => {
                </button>
                <div className={styles.sideBarItem} />
                <div className={styles.historyDiv} id="history">
-                  <div className={styles.history}>
-                     <img
-                        className={styles.messageSquareIcon}
-                        alt=""
-                        src="/message-square.svg"
-                     />
-                     <div className={styles.previousHistory}>previous history....</div>
-                  </div>
-                  <div className={styles.history}>
-                     <img
-                        className={styles.messageSquareIcon}
-                        alt=""
-                        src="/message-square.svg"
-                     />
-                     <div className={styles.previousHistory}>previous history....</div>
-                  </div>
-                  <div className={styles.history}>
-                     <img
-                        className={styles.messageSquareIcon}
-                        alt=""
-                        src="/message-square.svg"
-                     />
-                     <div className={styles.previousHistory}>previous history....</div>
-                  </div>
-                  <div className={styles.history}>
-                     <img
-                        className={styles.messageSquareIcon}
-                        alt=""
-                        src="/message-square.svg"
-                     />
-                     <div className={styles.previousHistory}>previous history ...</div>
-                  </div>
-                  <div className={styles.history} id="history1">
-                     <img
-                        className={styles.messageSquareIcon}
-                        alt=""
-                        src="/message-square1@2x.png"
-                     />
-                     <div className={styles.previousHistory}>previous history....</div>
-                  </div>
-                  {sessionData.map((item) => (
+                  {transformData(sessionData).map((item) => (
                      <Sessions
                         key={item.sessionId} 
-                        question={formatQuestion(item.questions[0])} // Pass the first question as a prop
+                        question={item.questions[0] ? item.questions[0] : '' } // Pass the first question as a prop
                      />
                   ))}
                </div>
@@ -170,7 +171,7 @@ const Body = ({ className = "" }) => {
                   <div className={styles.clearAll}>Clear All</div>
                </div>
                <div className={styles.newChatDiv}>
-                  <button className={styles.newChat} id="new_chat">+ New Chat</button>
+                  <button className={styles.newChat} onClick={newSession} id="new_chat">+ New Chat</button>
                   <button className={styles.search} id="Search">
                      <img className={styles.searchIcon} alt="" src="/search.svg" />
                   </button>
