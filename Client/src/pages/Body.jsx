@@ -69,10 +69,8 @@ const Body = ({ className = "" }) => {
    useEffect(()=>{
       if (dataFetched && sessionData.length > 0) {
          try{
-            setCurrentSessionId((prevSessionId)=>{
-               prevSessionId = sessionData[sessionData.length - 1].sessionId;
-               // console.log(prevSessionId)
-            });
+            const newSessionId = sessionData[sessionData.length - 1].sessionId;
+            setCurrentSessionId(newSessionId);
          } catch(err){
             console.error(err);
          }
