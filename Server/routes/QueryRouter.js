@@ -50,7 +50,7 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
   try {
     const userId = req.id;
     const answer = "The sample data of **response** \n Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rem atque voluptate nesciunt mollitia dolorem quae recusandae ipsum voluptas sint quia amet, ratione voluptatum cumque doloribus sit optio quibusdam quod soluta, fugit voluptates iste, labore veniam? Numquam beatae sed maxime dolore, nulla officia! Rerum explicabo consectetur consequuntur officia vel veritatis nulla ea amet corporis facere deserunt dolore asperiores quis voluptate accusantium modi quo, culpa dicta vero repudiandae eius blanditiis molestiae. Illum sint est exercitationem accusantium explicabo veritatis sapiente aliquam temporibus ipsam consectetur quae soluta autem ipsum cum esse eum, nisi nam cumque possimus reiciendis laborum impedit repellendus. Officiis rerum quo eaque minima eius! Ratione assumenda distinctio possimus velit amet impedit dicta autem quasi vitae ipsa ducimus est, aut fugiat reprehenderit deleniti quis dolore eum! Error cupiditate quibusdam recusandae iusto. Consectetur quo magni sunt maiores possimus voluptatibus, atque, sapiente at aliquam in tempore hic vitae dolore assumenda, quos beatae voluptatum autem perferendis.";
-    res.json({ answer: answer });
+    // res.json({ answer: answer });
 
     // Simulate getting a response from LLM
     // letanswer = await axios.post("http://localhost:5000/get_policies", {
