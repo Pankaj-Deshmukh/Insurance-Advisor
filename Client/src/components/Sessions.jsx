@@ -1,9 +1,9 @@
 import React from "react";
 import styles from "../pages/Body.module.css";
 
-export default function Sessions({question}) {
+export default function Sessions({question, onClick}) {
   return (
-    <div className={styles.history}>
+    <div className={styles.history} onClick={onClick}>
       <img
         className={styles.messageSquareIcon}
         alt=""

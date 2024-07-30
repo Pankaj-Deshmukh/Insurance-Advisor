@@ -4,14 +4,12 @@ import styles from "./Body.module.css";
 import Chat from "../components/Chat";
 import axios from "axios";
 import Sessions from "../components/Sessions";
+import useFetchSessions from "../hooks/GetAllSessions";
 
 const Body = ({ className = "" }) => {
    const [query, setQuery] = useState('');
    const [chatHistory, setChatHistory] = useState([]);
-   const [sessionData, setSessionData] = useState([]);
-   const [dataFetched, setDataFetched] = useState(false);
-   // const [hasSearched, setHasSearched] = useState(false);
-   const [currectSessionId, setCurrentSessionId] = useState("firstSession");
+   const [currentSessionId, setCurrentSessionId] = useState("firstSession");
    const userName = localStorage.getItem("name") ? localStorage.getItem("name") : "userName";
    const token = localStorage.getItem("token");
 
@@ -25,16 +23,15 @@ const Body = ({ className = "" }) => {
       try {
          const response = await axios.post("http://localhost:8081/api/query/llmquery",{
             query: query,
-            current_session_id: currectSessionId
+            current_session_id: currentSessionId
          },{
             headers: {
                Authorization: token
             }
          });
-      
-      setChatHistory((prevHistory)=>[...prevHistory, { question: query, answer: response.data.answer }]);
+      // (prevHistory)=>[...prevHistory, { question: query, answer: response.data.answer }]
+      setChatHistory(response.data);
       setQuery(''); // Clear the input field
-
       } catch (error) {
       console.error('Error fetching search results:', error.message);
       }
@@ -47,23 +44,8 @@ const Body = ({ className = "" }) => {
    };
 
    // Load all the session details
-   useEffect(()=>{
-      const sessionDetails = async ()=>{
-         try{
-            const response = await axios.post("http://localhost:8081/api/query/getAllSessions",{},{
-               headers: {
-                  Authorization: token
-               }
-            })
-            setSessionData(response.data);
-            // console.log(response.data);
-            setDataFetched(true);
-         } catch(err){
-            console.error('Error fetching session data:', err);
-         }
-      }
-      sessionDetails();
-   },[]);
+   const { sessionData, dataFetched, error } = useFetchSessions(token);
+   if(error) console.error(error);
 
    // Get the latest SessionId.
    useEffect(()=>{
@@ -82,10 +64,11 @@ const Body = ({ className = "" }) => {
       return data.map(session => ({
         sessionId: session.sessionId,
         questions: session.questions.map(q => 
-          Object.values(q).filter(value => value !== q._id && value !== q.createTime).join('')
+          Object.values(q).filter(value => value === q.question).join('')
         )
       }));
    };
+   // console.log(transformData(sessionData));
    
    // Create new Session & get sessionId.
    const newSession = async () => {
@@ -104,6 +87,25 @@ const Body = ({ className = "" }) => {
          }
       } else return;
    }
+
+   // Get Session Details.
+   const handleClick = async (sessionId) => {
+      // console.log(`Session ID clicked: ${sessionId}`);
+      // Call your function with the sessionId
+      try{
+         const response = await axios.post("http://localhost:8081/api/query/getSessionDetails",{
+            session_to_change_id: sessionId
+         },{
+            headers: {
+               Authorization: token
+            }
+         });
+         setChatHistory(response.data);
+         setCurrentSessionId(sessionId);
+      } catch (err) {
+         console.error(`Error Fetching Session Details :\n ${err}`);
+      }
+    };
 
    return (
       <div className={[styles.body, className].join(" ")} id="body">
@@ -161,6 +163,7 @@ const Body = ({ className = "" }) => {
                      <Sessions
                         key={item.sessionId} 
                         question={item.questions[0] ? item.questions[0] : '' } // Pass the first question as a prop
+                        onClick={() => handleClick(item.sessionId)}
                      />
                   ))}
                </div>

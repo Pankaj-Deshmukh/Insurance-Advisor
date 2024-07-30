@@ -145,6 +145,8 @@ body {
   align-items: center;
 }
 .searchBar {
+  position: absolute;
+  bottom: 0;
   justify-self: center;
   align-self: center;
   width: 45rem;
@@ -237,6 +239,10 @@ body {
   justify-content: center;
   align-items: center;
   padding: 20px 10px;
+  cursor: pointer;
+}
+.history:hover {
+  background-color: #e8f4ff;
 }
 .historyDiv {
   display: flex;
