@@ -1,5 +1,7 @@
 import React from "react";
 import styles from "../pages/Body.module.css"
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 export default function Chat(props) {
   return (
@@ -15,7 +17,9 @@ export default function Chat(props) {
           </button>
         </div>
         <div className={styles.response}>
-          <p> {props.answer} </p>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {props.answer}
+          </ReactMarkdown>
         </div>
         <div className={styles.mainChild} />
       </div>

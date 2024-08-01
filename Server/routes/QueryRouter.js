@@ -1,9 +1,9 @@
-require('dotenv').config();
+require("dotenv").config();
 const { Router } = require("express");
-const  z  = require("zod");
+const z = require("zod");
 const { User, Question } = require("../db/index"); // Adjust the path as needed
 const authMiddleware = require("../middlewares/authMiddleware");
-const { default: mongoose } = require('mongoose');
+const { default: mongoose } = require("mongoose");
 const axios = require("axios");
 
 const router = Router();
@@ -23,7 +23,6 @@ const getSessionDetailsSchema = z.object({
 const getAllSessionsSchema = z.object({});
 
 const updateSessionQuestions = (user, sessionId, question) => {
-
   let sessionUpdated = false;
   for (let session of user.sessionQuestions) {
     // console.log(session.question);
@@ -37,7 +36,7 @@ const updateSessionQuestions = (user, sessionId, question) => {
 };
 
 // Endpoint to handle LLM queries and store the result in the database
-router.post('/llmquery', authMiddleware, async (req, res) => {
+router.post("/llmquery", authMiddleware, async (req, res) => {
   const validation = llmQuerySchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
@@ -46,7 +45,14 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
 
   try {
     const userId = req.id;
-    const answer = "The sample data of **response** \n Lorem ipsum dolor sit, amet consectetur adipisicing elit. Rem atque voluptate nesciunt mollitia dolorem quae recusandae ipsum voluptas sint quia amet, ratione voluptatum cumque doloribus sit optio quibusdam quod soluta, fugit voluptates iste, labore veniam? Numquam beatae sed maxime dolore, nulla officia! Rerum explicabo consectetur consequuntur officia vel veritatis nulla ea amet corporis facere deserunt dolore asperiores quis voluptate accusantium modi quo, culpa dicta vero repudiandae eius blanditiis molestiae. Illum sint est exercitationem accusantium explicabo veritatis sapiente aliquam temporibus ipsam consectetur quae soluta autem ipsum cum esse eum, nisi nam cumque possimus reiciendis laborum impedit repellendus. Officiis rerum quo eaque minima eius! Ratione assumenda distinctio possimus velit amet impedit dicta autem quasi vitae ipsa ducimus est, aut fugiat reprehenderit deleniti quis dolore eum! Error cupiditate quibusdam recusandae iusto. Consectetur quo magni sunt maiores possimus voluptatibus, atque, sapiente at aliquam in tempore hic vitae dolore assumenda, quos beatae voluptatum autem perferendis.";
+    const answer = `1. **Open Door Policy**:\n
+A management style that encourages employees to freely communicate their ideas, concerns, and suggestions to their superiors without fear of retribution or judgment.\n \n
+
+2. **Zero Tolerance Policy**: \n
+A strict approach that prohibits certain behaviors or actions (e.g., bullying, harassment) and ensures swift and severe consequences for those who violate the policy.\n \n
+
+3. **Bring Your Child to Work Day Policy**: \n
+An employee benefit that allows parents to bring their children to work on a designated day, promoting work-life balance and family bonding.`;
     // res.json({ answer: answer });
 
     // Simulate getting a response from LLM
@@ -55,11 +61,11 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
     // });
     // console.log(typeof(answer.data.response));
     // answer = answer.data.response;
-      
+
     // Find the user and the session
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Create a new Question
@@ -81,7 +87,7 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
 
     // Update the sessionQuestions array
     updateSessionQuestions(user, current_session_id, query);
-    
+
     // Save the user with the updated sessionQuestions
     await user.save();
 
@@ -89,14 +95,12 @@ router.post('/llmquery', authMiddleware, async (req, res) => {
     res.status(200).json(Array.from(user.sessionData.get(current_session_id)));
   } catch (error) {
     // console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
 
-
-
 // Endpoint to create a new session
-router.post('/createNewSession', authMiddleware, async (req, res) => {
+router.post("/createNewSession", authMiddleware, async (req, res) => {
   const validation = createNewSessionSchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
@@ -111,21 +115,20 @@ router.post('/createNewSession', authMiddleware, async (req, res) => {
     // Find the user
     const user = await User.findById(userId);
     if (!user) {
-      return res.status(404).json({ message: 'User not found' });
+      return res.status(404).json({ message: "User not found" });
     }
 
     // Update user's sessionQuestions
-    user.sessionQuestions.push({ sessionId: newSessionId, question: '' });
+    user.sessionQuestions.push({ sessionId: newSessionId, question: "" });
     await user.save();
 
     // Return the new session ID
     res.status(200).json({ newSessionId });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: "Server error" });
   }
 });
-
 
 // Endpoint to get session details
 router.post("/getSessionDetails", authMiddleware, async (req, res) => {
@@ -172,10 +175,12 @@ router.post("/getAllSessions", authMiddleware, async (req, res) => {
     }
 
     // Prepare the response to include session IDs and questions
-    const sessionDetails = Array.from(user.sessionData).map(([sessionId, questions]) => ({
-      sessionId,
-      questions
-    }));
+    const sessionDetails = Array.from(user.sessionData).map(
+      ([sessionId, questions]) => ({
+        sessionId,
+        questions,
+      })
+    );
 
     res.status(200).json(sessionDetails);
   } catch (error) {
@@ -183,6 +188,5 @@ router.post("/getAllSessions", authMiddleware, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
-
 
 module.exports = router;
