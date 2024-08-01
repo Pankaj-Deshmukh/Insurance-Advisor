@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 
-const getAllSessions = (token) => {
+const getAllSessions = (token,hasSearched) => {
     const [sessionData, setSessionData] = useState([]);
     const [dataFetched, setDataFetched] = useState(false);
     const [error, setError] = useState(null);
@@ -14,7 +14,7 @@ const getAllSessions = (token) => {
                     Authorization: token,
                 }
             });
-            setSessionData(response.data);
+            setSessionData(response.data.reverse());
             setDataFetched(true);
         } catch (err) {
             console.error("Error fetching session data:", err);
@@ -23,7 +23,7 @@ const getAllSessions = (token) => {
         };
 
         fetchSessionDetails();
-    }, [token]);
+    }, [token,hasSearched]);
 
     return { sessionData, dataFetched, error };
 };

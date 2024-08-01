@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useRef} from "react";
+import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import styles from "./Body.module.css";
 import Chat from "../components/Chat";
@@ -9,9 +10,17 @@ import useFetchSessions from "../hooks/GetAllSessions";
 const Body = ({ className = "" }) => {
    const [query, setQuery] = useState('');
    const [chatHistory, setChatHistory] = useState([]);
+   const [firstSearch, setFirstSearch] = useState(false);
    const [currentSessionId, setCurrentSessionId] = useState("firstSession");
    const userName = localStorage.getItem("name") ? localStorage.getItem("name") : "userName";
    const token = localStorage.getItem("token");
+   const navigate = useNavigate();
+
+
+   // Navigate to setting page
+   const settingPage = () => {
+      navigate("/settings");
+   }
 
    const handleInputChange = (e) => {
       setQuery(e.target.value);
@@ -29,9 +38,12 @@ const Body = ({ className = "" }) => {
                Authorization: token
             }
          });
-      // (prevHistory)=>[...prevHistory, { question: query, answer: response.data.answer }]
       setChatHistory(response.data);
       setQuery(''); // Clear the input field
+
+      if(response.data.length === 1){
+         setFirstSearch(true);
+      }
       } catch (error) {
       console.error('Error fetching search results:', error.message);
       }
@@ -44,15 +56,16 @@ const Body = ({ className = "" }) => {
    };
 
    // Load all the session details
-   const { sessionData, dataFetched, error } = useFetchSessions(token);
+   const { sessionData, dataFetched, error } = useFetchSessions(token,firstSearch);
    if(error) console.error(error);
 
    // Get the latest SessionId.
    useEffect(()=>{
       if (dataFetched && sessionData.length > 0) {
          try{
-            const newSessionId = sessionData[sessionData.length - 1].sessionId;
+            const newSessionId = sessionData[0].sessionId;
             setCurrentSessionId(newSessionId);
+            handleClick(newSessionId);
          } catch(err){
             console.error(err);
          }
@@ -62,10 +75,10 @@ const Body = ({ className = "" }) => {
    // Transform session data(questions) from objects to string.
    const transformData = (data) => {
       return data.map(session => ({
-        sessionId: session.sessionId,
-        questions: session.questions.map(q => 
-          Object.values(q).filter(value => value === q.question).join('')
-        )
+         sessionId: session.sessionId,
+         questions: session.questions.map(q => 
+            Object.values(q).filter(value => value === q.question).join('')
+         )
       }));
    };
    // console.log(transformData(sessionData));
@@ -105,7 +118,7 @@ const Body = ({ className = "" }) => {
       } catch (err) {
          console.error(`Error Fetching Session Details :\n ${err}`);
       }
-    };
+   };
 
    return (
       <div className={[styles.body, className].join(" ")} id="body">
@@ -153,7 +166,7 @@ const Body = ({ className = "" }) => {
                   <div className={styles.userName}>{userName}</div>
                </div>
                <span className={styles.sideBarItem} />
-               <button className={styles.setting} id="setting">
+               <button className={styles.setting} onClick={settingPage} id="setting">
                   <img className={styles.settingIcon} alt="setting" src="/setting-icon.svg" />
                   <div className={styles.setting1}>Setting</div>
                </button>
@@ -167,10 +180,12 @@ const Body = ({ className = "" }) => {
                      />
                   ))}
                </div>
+               <div className={styles.sideBarItem} />
                <div className={styles.sideHeader} id="your_conversation">
                   <div className={styles.yourConversations}>Your Conversations</div>
                   <div className={styles.clearAll}>Clear All</div>
                </div>
+               <div className={styles.sideBarItem} />
                <div className={styles.newChatDiv}>
                   <button className={styles.newChat} onClick={newSession} id="new_chat">+ New Chat</button>
                   <button className={styles.search} id="Search">

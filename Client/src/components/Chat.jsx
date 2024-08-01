@@ -14,7 +14,6 @@ export default function Chat(props) {
             <img className={styles.icon} alt="" src="/icon.svg" />
           </button>
         </div>
-        <div className={styles.chatAi}>Chat A.I +</div>
         <div className={styles.response}>
           <p> {props.answer} </p>
         </div>

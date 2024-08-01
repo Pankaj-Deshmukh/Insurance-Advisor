@@ -8,9 +8,6 @@ const axios = require("axios");
 
 const router = Router();
 
-// Sample answer for demonstration
-const ans = "This is the sample answer for all the questions for now";
-
 // Zod schemas for input validation
 const llmQuerySchema = z.object({
   query: z.string().nonempty(),

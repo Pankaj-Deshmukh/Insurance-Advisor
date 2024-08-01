@@ -9,7 +9,7 @@ import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import Start from "./pages/Start";
 import Body from "./pages/Body";
-import Home from "./pages/Home";
+import Settings from "./pages/Settings";
 
 function App() {
   const action = useNavigationType();
@@ -53,6 +53,7 @@ function App() {
       <Route path="/signin" element={<SignIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/home" element={<Body/>}/>
+      <Route path="/settings" element={<Settings/>}/>
     </Routes>
   );
 }

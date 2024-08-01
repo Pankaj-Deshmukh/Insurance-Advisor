@@ -1,6 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Paytone+One:wght@400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap");
+/* @import url("https://fonts.googleapis.com/css2?family=Paytone+One:wght@400&display=swap"); */
+/* @import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400&display=swap"); */
+/* @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap");  */
+/* @import url('https://fonts.googleapis.com/css2?family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap'); */
 
 @tailwind base;
 @tailwind components;
@@ -12,6 +13,7 @@ body {
 ::before,
 ::after {
   border-width: 0;
+  font-family: Ubuntu;
 }
 body {
   margin: 0;
@@ -21,9 +23,10 @@ body {
   /* fonts */
   --font-inter: Inter;
 
+
   /* font sizes */
-/*   --font-size-5xs: 8px;
-  --font-size-smi: 13px; */
+  --font-size-5xs: 15px;
+  --font-size-smi: 15px;
 
   /* Colors */
   --color-black: #000;
