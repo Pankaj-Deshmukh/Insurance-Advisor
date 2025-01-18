@@ -12,6 +12,7 @@ const router = Router();
 const llmQuerySchema = z.object({
   query: z.string().nonempty(),
   current_session_id: z.string().nonempty(),
+  id: z.string().nonempty()
 });
 
 const createNewSessionSchema = z.object({});
@@ -36,7 +37,7 @@ const updateSessionQuestions = (user, sessionId, question) => {
 };
 
 // Endpoint to handle LLM queries and store the result in the database
-router.post("/llmquery", authMiddleware, async (req, res) => {
+router.post("/llmquery", async (req, res) => {
   const validation = llmQuerySchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
@@ -44,7 +45,7 @@ router.post("/llmquery", authMiddleware, async (req, res) => {
   const { query, current_session_id } = validation.data;
 
   try {
-    const userId = req.id;
+    const userId = req.body.id;
     const answer = `1. **Open Door Policy**:\n
 A management style that encourages employees to freely communicate their ideas, concerns, and suggestions to their superiors without fear of retribution or judgment.\n \n
 
@@ -158,14 +159,15 @@ router.post("/getSessionDetails", authMiddleware, async (req, res) => {
 });
 
 // Endpoint to get all sessions
-router.post("/getAllSessions", authMiddleware, async (req, res) => {
+router.post("/getAllSessions", async (req, res) => {
+
   const validation = getAllSessionsSchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
   }
 
   try {
-    const userId = req.id;
+    const userId = req.body.id;
 
     // Find the user
     const user = await User.findById(userId);
