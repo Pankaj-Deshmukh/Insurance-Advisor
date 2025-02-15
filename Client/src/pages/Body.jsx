@@ -33,7 +33,10 @@ const Body = ({ className = "" }) => {
          const response = await axios.post("http://localhost:8081/api/query/llmquery",{
             query: query,
             current_session_id: currentSessionId,
-            id: token
+         }, {
+            headers: {
+               Authorization: token,
+           }
          });
       setChatHistory(response.data);
       setQuery(''); // Clear the input field

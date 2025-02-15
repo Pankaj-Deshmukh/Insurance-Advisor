@@ -12,7 +12,6 @@ const router = Router();
 const llmQuerySchema = z.object({
   query: z.string().nonempty(),
   current_session_id: z.string().nonempty(),
-  id: z.string().nonempty()
 });
 
 const createNewSessionSchema = z.object({});
@@ -37,7 +36,7 @@ const updateSessionQuestions = (user, sessionId, question) => {
 };
 
 // Endpoint to handle LLM queries and store the result in the database
-router.post("/llmquery", async (req, res) => {
+router.post("/llmquery", authMiddleware, async (req, res) => {
   const validation = llmQuerySchema.safeParse(req.body);
   if (!validation.success) {
     return res.status(400).json({ errors: validation.error.errors });
@@ -45,7 +44,8 @@ router.post("/llmquery", async (req, res) => {
   const { query, current_session_id } = validation.data;
 
   try {
-    const userId = req.body.id;
+    const userId = req.id;
+    // console.log(userId); 
     const answer = `1. **Open Door Policy**:\n
 A management style that encourages employees to freely communicate their ideas, concerns, and suggestions to their superiors without fear of retribution or judgment.\n \n
 
@@ -99,7 +99,7 @@ An employee benefit that allows parents to bring their children to work on a des
     res.status(500).json({ message: "Server error" });
   }
 });
-
+// 67b0b8e6280a17edfe535356
 // Endpoint to create a new session
 router.post("/createNewSession", authMiddleware, async (req, res) => {
   const validation = createNewSessionSchema.safeParse(req.body);
@@ -109,6 +109,7 @@ router.post("/createNewSession", authMiddleware, async (req, res) => {
 
   try {
     const userId = req.id;
+    // console.log(userId);
 
     // Create a new session ID
     const newSessionId = new mongoose.Types.ObjectId().toString();
@@ -159,7 +160,7 @@ router.post("/getSessionDetails", authMiddleware, async (req, res) => {
 });
 
 // Endpoint to get all sessions
-router.post("/getAllSessions", async (req, res) => {
+router.post("/getAllSessions", authMiddleware, async (req, res) => {
 
   const validation = getAllSessionsSchema.safeParse(req.body);
   if (!validation.success) {
@@ -167,8 +168,8 @@ router.post("/getAllSessions", async (req, res) => {
   }
 
   try {
-    const userId = req.body.id;
-
+    const userId = req.id;
+    // console.log(userId);
     // Find the user
     const user = await User.findById(userId);
     // console.log(user);
